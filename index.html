@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lab Attendance</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            background: #f3f1ff;
+        }
+
+        h1 {
+            color: #4b3f8f;
+        }
+
+        input, select, button {
+            padding: 12px;
+            margin: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #6554c0;
+            color: white;
+            border: none;
+            border-radius: 6px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        th {
+            background: #6554c0;
+            color: white;
+        }
+
+        .delete {
+            background: red;
+            color: white;
+            border: none;
+            padding: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Lab Attendance Mark Management</h1>
+
+    <input
+        id="name"
+        type="text"
+        placeholder="Student Name"
+    >
+
+    <input
+        id="roll"
+        type="text"
+        placeholder="Roll Number"
+    >
+
+    <select id="status">
+        <option>Present</option>
+        <option>Absent</option>
+    </select>
+
+    <br>
+
+    <button onclick="saveAttendance()">
+        Mark Attendance
+    </button>
+
+    <h2>Total: <span id="total">0</span></h2>
+
+    <h2>Present: <span id="present">0</span></h2>
+
+    <h2>Absent: <span id="absent">0</span></h2>
+
+    <h2>Attendance Details</h2>
+
+    <table>
+
+        <tr>
+            <th>Name</th>
+            <th>Roll No</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+
+        <tbody id="data"></tbody>
+
+    </table>
+
+
+<script>
+
+let students = JSON.parse(
+    localStorage.getItem("students") || "[]"
+);
+
+
+function saveAttendance() {
+
+    let name = document.getElementById("name").value;
+    let roll = document.getElementById("roll").value;
+    let status = document.getElementById("status").value;
+
+
+    if (name === "" || roll === "") {
+
+        alert("Please enter Name and Roll Number");
+
+        return;
+    }
+
+
+    students.push({
+
+        name: name,
+
+        roll: roll,
+
+        status: status
+
+    });
+
+
+    localStorage.setItem(
+        "students",
+        JSON.stringify(students)
+    );
+
+
+    document.getElementById("name").value = "";
+
+    document.getElementById("roll").value = "";
+
+
+    showStudents();
+
+
+    alert("Attendance Saved Successfully!");
+
+}
+
+
+function showStudents() {
+
+    let table = document.getElementById("data");
+
+    table.innerHTML = "";
+
+
+    let present = 0;
+
+    let absent = 0;
+
+
+    students.forEach(function(student, index) {
+
+        table.innerHTML += `
+
+            <tr>
+
+                <td>${student.name}</td>
+
+                <td>${student.roll}</td>
+
+                <td>${student.status}</td>
+
+                <td>
+                    <button
+                        class="delete"
+                        onclick="deleteStudent(${index})">
+                        Delete
+                    </button>
+                </td>
+
+            </tr>
+
+        `;
+
+
+        if (student.status === "Present") {
+
+            present++;
+
+        } else {
+
+            absent++;
+
+        }
+
+    });
+
+
+    document.getElementById("total").innerText =
+        students.length;
+
+    document.getElementById("present").innerText =
+        present;
+
+    document.getElementById("absent").innerText =
+        absent;
+
+}
+
+
+function deleteStudent(index) {
+
+    students.splice(index, 1);
+
+
+    localStorage.setItem(
+        "students",
+        JSON.stringify(students)
+    );
+
+
+    showStudents();
+
+}
+
+
+showStudents();
+
+</script>
+
+</body>
+</html>
